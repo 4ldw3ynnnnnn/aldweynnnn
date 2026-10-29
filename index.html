@@ -1941,6 +1941,11 @@ main()</code></pre>
             </div>
 
             <div class="form-group">
+              <label for="email">Enter your email address:</label>
+              <input type="email" id="email" class="form-control" placeholder="Your email address" required>
+            </div>
+
+            <div class="form-group">
               <label for="message">Message:</label>
               <textarea id="message" class="form-control" placeholder="Write your message here..." required></textarea>
             </div>
@@ -2258,9 +2263,10 @@ main()</code></pre>
     document.getElementById('contactForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const nameVal = document.getElementById('name').value.trim();
+      const emailVal = document.getElementById('email').value.trim();
       const messageVal = document.getElementById('message').value.trim();
       const subject = encodeURIComponent(`Portfolio message${nameVal ? ` from ${nameVal}` : ''}`);
-      const body = encodeURIComponent(`${messageVal}${nameVal ? `\n\nFrom: ${nameVal}` : ''}`);
+      const body = encodeURIComponent(`${messageVal}\n\nFrom: ${nameVal || 'Visitor'}\nEmail: ${emailVal}`);
       window.location.href = `mailto:mata.johnaldrinn@gmail.com?subject=${subject}&body=${body}`;
     });
 
