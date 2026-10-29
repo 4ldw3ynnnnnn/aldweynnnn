@@ -1178,6 +1178,36 @@
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
     }
 
+    #email,
+    #email:focus,
+    #email.email-valid,
+    #email.email-invalid,
+    #email:-webkit-autofill,
+    #email:-webkit-autofill:hover,
+    #email:-webkit-autofill:focus {
+      background-color: rgba(10, 12, 18, 0.85) !important;
+      -webkit-box-shadow: 0 0 0 1000px rgba(10, 12, 18, 0.85) inset;
+      box-shadow: 0 0 0 1000px rgba(10, 12, 18, 0.85) inset;
+    }
+
+    #email.email-valid {
+      color: #38bdf8 !important;
+      -webkit-text-fill-color: #38bdf8 !important;
+      border-color: #38bdf8;
+    }
+
+    #email.email-invalid {
+      color: #ff6b6b !important;
+      -webkit-text-fill-color: #ff6b6b !important;
+      border-color: #ff6b6b;
+    }
+
+    .email-validation {
+      min-height: 1.3em;
+      color: #ff6b6b !important;
+      -webkit-text-fill-color: #ff6b6b !important;
+    }
+
     textarea.form-control {
       resize: vertical;
       min-height: 120px;
@@ -1191,6 +1221,18 @@
       padding: 10px 14px;
       border-left: 3px solid #ffffff;
       border-radius: 4px;
+    }
+
+    .contact-status {
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .contact-status[hidden] {
+      display: none;
     }
 
     .btn {
@@ -1942,7 +1984,8 @@ main()</code></pre>
 
             <div class="form-group">
               <label for="email">Enter your email address:</label>
-              <input type="email" id="email" class="form-control" placeholder="Your email address" required>
+              <input type="email" id="email" class="form-control" placeholder="Your email address" aria-describedby="emailValidation" required>
+              <span class="email-validation" id="emailValidation" role="status" aria-live="polite"></span>
             </div>
 
             <div class="form-group">
@@ -1958,6 +2001,7 @@ main()</code></pre>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
           </form>
+          <p class="contact-status" id="contactStatus" role="status" aria-live="polite" hidden></p>
         </div>
       </div>
     </section>
@@ -2259,7 +2303,20 @@ main()</code></pre>
       }
     });
 
-    // Open a pre-filled email draft; the visitor sends it from their email app.
+    // Check email syntax only; a browser cannot confirm that the mailbox exists.
+    const emailInput = document.getElementById('email');
+    const emailValidation = document.getElementById('emailValidation');
+
+    emailInput.addEventListener('input', () => {
+      const email = emailInput.value.trim();
+      const looksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      emailInput.classList.toggle('email-valid', looksValid);
+      emailInput.classList.toggle('email-invalid', email.length > 0 && !looksValid);
+      emailValidation.textContent = email.length > 0 && !looksValid ? 'INVALID EMAIL ADDRESS' : '';
+    });
+
+    // This opens a message addressed to you in the visitor's email app.
     document.getElementById('contactForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const nameVal = document.getElementById('name').value.trim();
@@ -2267,6 +2324,9 @@ main()</code></pre>
       const messageVal = document.getElementById('message').value.trim();
       const subject = encodeURIComponent(`Portfolio message${nameVal ? ` from ${nameVal}` : ''}`);
       const body = encodeURIComponent(`${messageVal}\n\nFrom: ${nameVal || 'Visitor'}\nEmail: ${emailVal}`);
+      const contactStatus = document.getElementById('contactStatus');
+      contactStatus.textContent = 'YOUR EMAIL APP IS OPENING WITH YOUR MESSAGE. PRESS SEND THERE TO DELIVER IT.';
+      contactStatus.hidden = false;
       window.location.href = `mailto:mata.johnaldrinn@gmail.com?subject=${subject}&body=${body}`;
     });
 
